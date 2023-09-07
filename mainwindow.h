@@ -12,6 +12,8 @@
 #include "settingswindow.h"
 #include "bodylistwindow.h"
 #include "statisticswindow.h"
+#include "exportsystemwindow.h"
+#include "importsystemwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,6 +39,9 @@ private:
     BodyListWindow* bodyListWindow;
     SettingsWindow* settingsWindow;
     StatisticsWindow* statisticsWindow;
+    ExportSystemWindow* exportSystemWindow;
+    ImportSystemWindow* importSystemWindow;
+
     int counter;
 
     qreal realInterval;
@@ -48,6 +53,9 @@ private slots:
     void update();
     void changeSettings(Settings);
     void setSelectedBody(Body*);
+    void exportSystem(QString);
+    void importSystem(QString);
+
     void on_SettingsButton_clicked();
     void on_NewBodyButton_clicked();
     void on_StartPauseButton_clicked();
@@ -57,5 +65,8 @@ private slots:
 
     void mouseMoveEvent(QMouseEvent*);
     void on_StatisticsButton_clicked();
+    //void on_pushButton_clicked();
+    void on_SaveSystemButton_clicked();
+    void on_ImportSystemButton_clicked();
 };
 #endif // MAINWINDOW_H

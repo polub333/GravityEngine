@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
+#include <QPainter>
 
 #include "directions.h"
 
@@ -17,9 +18,11 @@ public:
 
     void drawArrow(qreal, qreal, direction);
     void drawCrosshair(qreal, qreal);
+    void drawLine(std::pair<qreal, qreal>, qreal, qreal);
 
     void setSceneSize(qreal, qreal);
 private:
+    QPainter* painter;
     qreal width;
     qreal height;
 private slots:

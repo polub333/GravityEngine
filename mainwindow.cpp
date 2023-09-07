@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     , bodyListWindow(new BodyListWindow(engine))
     , settingsWindow(new SettingsWindow)
     , statisticsWindow(new StatisticsWindow)
+    , exportSystemWindow(new ExportSystemWindow)
+    , importSystemWindow(new ImportSystemWindow)
 {
     ui->setupUi(this);
     Scene* scene = new Scene();
@@ -28,8 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     engine->setScene(scene);
     engine->setSettings(settings);
-    engine->addBody(0, 0, 0, 0, 100, "NONE");
-    engine->addBody(50, 0, 0, 1, 0, "NONE");
+
+    engine->importBodySystem("./Systems/system.txt");
+    //engine->addBody(0, 0, 0, 0, 100, "NONE");
+    //engine->addBody(50, 0, 0, 1, 0, "NONE");
+    //engine->exportBodySystem();
     /*
 
     0 0 0 0 100000
@@ -44,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(settingsWindow, SIGNAL(sendSettings(Settings)), this, SLOT(changeSettings(Settings)));
     connect(engine, SIGNAL(setSelectedBody(Body*)), this, SLOT(setSelectedBody(Body*)));
+    connect(exportSystemWindow, SIGNAL(exportSystem(QString)), this, SLOT(exportSystem(QString)));
+    connect(importSystemWindow, SIGNAL(importSystem(QString)), this, SLOT(importSystem(QString)));
 
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->setInterval(realInterval);
@@ -56,6 +63,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     qDebug()<<counter;
+    delete createBodyWindow;
+    delete editBodyWindow;
+    delete bodyListWindow;
+    delete settingsWindow;
+    delete statisticsWindow;
+    delete exportSystemWindow;
+    delete importSystemWindow;
     delete ui;
 }
 
@@ -164,5 +178,32 @@ void MainWindow::on_StatisticsButton_clicked()
     if(selectedBody != nullptr){
         statisticsWindow->open(selectedBody);
     }
+}
+
+void MainWindow::on_SaveSystemButton_clicked()
+{
+    exportSystemWindow->show();
+}
+
+void MainWindow::exportSystem(QString name)
+{
+    engine->exportBodySystem("./Systems/" + name + ".txt");
+}
+
+/*
+void MainWindow::on_pushButton_clicked()
+{
+
+}ddd
+*/
+
+void MainWindow::on_ImportSystemButton_clicked()
+{
+    importSystemWindow->show();
+}
+
+void MainWindow::importSystem(QString name)
+{
+    engine->importBodySystem("./Systems/" + name + ".txt");
 }
 

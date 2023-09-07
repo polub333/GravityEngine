@@ -3,6 +3,10 @@
 
 #include <QObject>
 
+#include <QString>
+
+#include <fstream>
+
 #include "scene.h"
 #include "body.h"
 #include "settings.h"
@@ -23,6 +27,10 @@ public:
     void setForceField(const bool);
     bool getForceField() const;
 
+    void importBodySystem(const QString path);
+    void exportBodySystem(const QString path);
+    void exportBodySystem();
+
 private:
     Scene* scene;
     Settings settings;
@@ -33,6 +41,8 @@ private:
 
     bool forceField;
     void drawForces();
+    void drawForceFields();
+    void clearSystem();
 private slots:
     void changeCursorPosition(qreal, qreal);
     void mousePressed(qreal, qreal);

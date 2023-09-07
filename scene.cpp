@@ -2,7 +2,8 @@
 
 Scene::Scene()
 {
-
+    painter = new QPainter(this);
+    painter.setPen(QPen(Qt::black, 1));
     QPen pen(QBrush(Qt::black), 10);
     addRect(-200, -200, 400, 400, pen, QBrush(Qt::NoBrush));
     addRect(50, 50, 150, 150, QPen(Qt::NoPen), QBrush(Qt::red));
@@ -134,4 +135,13 @@ void Scene::drawArrow(qreal x, qreal y, direction direct)
     else{
         qDebug()<<"Unknown direction of an arrow";
     }
+}
+
+void Scene::drawLine(std::pair<qreal, qreal> point, qreal length, qreal angle)
+{
+    QLineF line;
+    line.setP1(QPointF(point.first, point.second));
+    line.setLength(length);
+    line.setAngle(angle);
+    painter.drawLine();
 }

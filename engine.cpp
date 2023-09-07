@@ -162,3 +162,73 @@ void Engine::mousePressed(qreal x, qreal y)
         }
     }
 }
+#include <direct.h>
+void Engine::importBodySystem(const QString path)
+{
+    clearSystem();
+    std::fstream file(path.toStdString(), std::ios_base::in);
+    qDebug()<<path;
+    char p[FILENAME_MAX];
+    _getcwd(p, sizeof(p));
+    p[sizeof(p)-1] = '\0';
+    //printf("%s", p);
+    qDebug()<<p;
+    int planetNum;
+    file >> planetNum;
+    qDebug()<<planetNum;
+    for(int i=0;i<planetNum;++i){
+        qreal xCoord, yCoord, xVelocity, yVelocity, mass;
+        std::string name;
+        std::getline(file, name);
+        std::getline(file, name);
+        file>>xCoord>>yCoord>>xVelocity>>yVelocity>>mass;
+        addBody(xCoord, yCoord, xVelocity, yVelocity, mass, QString::fromStdString(name));
+        qDebug()<<QString::fromStdString(name)<<xCoord<<yCoord<<xVelocity<<yVelocity<<mass;
+        /*
+        bodies[i]->setName(QString::fromStdString(name));
+        bodies[i]->setCoordinates(xCoord, yCoord);
+        bodies[i]->setVelocity(xVelocity, yVelocity);
+        bodies[i]->setMass(mass);
+        */
+    }
+    file.close();
+}
+
+void Engine::exportBodySystem()
+{
+    exportBodySystem("Systems/system.txt");
+}
+
+void Engine::exportBodySystem(const QString path)
+{
+    std::fstream file(path.toStdString(), std::ios_base::out);
+    int planetNum = bodies.size();
+    file<<planetNum<<std::endl;
+    for(int i=0; i<planetNum;++i){
+        file<<bodies[i]->getName().toStdString()<<std::endl;
+        file<<bodies[i]->getCoordinates().first<<std::endl;
+        file<<bodies[i]->getCoordinates().second<<std::endl;
+        file<<bodies[i]->getVelocity().first<<std::endl;
+        file<<bodies[i]->getVelocity().second<<std::endl;
+        file<<bodies[i]->getMass()<<std::endl;
+    }
+    file.close();
+}
+
+void Engine::clearSystem()
+{
+    bodies.clear();
+}
+
+void Engine::drawForceFields()
+{
+    for(int x = -100; x<100;x += 20){
+        for(int y=-100; y < 100;y += 20){
+            std::pair<qreal, qreal> force = computeForces(x, y);
+            qreal angle = force.second / force.second;
+            std::pair<qreal, qreal> point = std::make_pair<qreal, qreal>(x, y);
+            qreal length = 10;
+            scene->drawLine(point, length, angle);
+        }
+    }
+}

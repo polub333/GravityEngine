@@ -15,6 +15,8 @@ SOURCES += \
     createbodywindow.cpp \
     editbodywindow.cpp \
     engine.cpp \
+    exportsystemwindow.cpp \
+    importsystemwindow.cpp \
     main.cpp \
     mainwindow.cpp \
     scene.cpp \
@@ -30,7 +32,9 @@ HEADERS += \
     directions.h \
     editbodywindow.h \
     engine.h \
+    exportsystemwindow.h \
     guiheaders.h \
+    importsystemwindow.h \
     mainwindow.h \
     scene.h \
     settings.h \
@@ -40,6 +44,8 @@ HEADERS += \
 FORMS += \
     bodylistwindow.ui \
     bodywindow.ui \
+    exportsystemwindow.ui \
+    importsystemwindow.ui \
     mainwindow.ui \
     settingswindow.ui \
     statisticswindow.ui
