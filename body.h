@@ -9,7 +9,7 @@
 class Body
 {
 public:
-    Body();
+    Body(int, int);
     void setCoordinates(const qreal, const qreal);
     void setVelocity(const qreal, const qreal);
     void setMass(const qreal);
@@ -43,6 +43,8 @@ public:
 private:
     qreal x;
     qreal y;
+    int sizeX;
+    int sizeY;
     qreal velX;
     qreal velY;
     qreal mass;

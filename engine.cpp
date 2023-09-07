@@ -5,6 +5,8 @@ Engine::Engine()
     maxVel = 0;
     maxX = 0;
     forceField = false;
+    sizeX = 400;
+    sizeY = 400;
 }
 
 void Engine::setScene(Scene* _scene)
@@ -31,7 +33,7 @@ bool Engine::getForceField() const
 
 void Engine::addBody(qreal x, qreal y, qreal velX, qreal velY, qreal mass, QString name)
 {
-    Body* body = new Body();
+    Body* body = new Body(sizeX, sizeY);
     body->setCoordinates(x, y);
     body->setVelocity(velX, velY);
     body->setMass(mass);

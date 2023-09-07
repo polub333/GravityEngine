@@ -1,7 +1,10 @@
 #include "body.h"
 
-Body::Body()
+Body::Body(int sx, int sy)
 {
+    sizeX = sx;
+    sizeY = sy;
+
     isSelected = false;
     maxX = -1e9;
     minX = 1e9;
@@ -61,7 +64,19 @@ QString Body::getName() const
 void Body::changeCoordinatesDueVelocity(const qreal time)
 {
     x += velX * time;
+    if(x > sizeX){
+        x = x - 2 * sizeX;
+    }
+    else if(x < -1 * sizeX){
+        x = x + 2*sizeX;
+    }
     y += velY * time;
+    if(y > sizeY){
+        y = y - 2*sizeY;
+    }
+    else if(y < -1 * sizeY){
+        y = y + 2*sizeY;
+    }
 }
 
 void Body::changeVelocityDueForce(const qreal forceX, const qreal forceY, const qreal time)

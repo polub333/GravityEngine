@@ -33,6 +33,8 @@ public:
 
 private:
     Scene* scene;
+    int sizeX;
+    int sizeY;
     Settings settings;
     qreal inter;
     qreal maxVel;

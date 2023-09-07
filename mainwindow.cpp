@@ -14,12 +14,14 @@ MainWindow::MainWindow(QWidget *parent)
     , importSystemWindow(new ImportSystemWindow)
 {
     ui->setupUi(this);
-
     //ui->SceneView->setViewportUpdateMode(QGraphicsView::LazyViewportUpdate);
-    ui->SceneView->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
-    ui->SceneView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+    //ui->SceneView->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
+    //ui->SceneView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+    //ui->SceneView->setSceneRect(-400, -400, 400, 400);
+
 
     scene = new Scene();
+    scene->setSceneRect(-400, -400, 780, 780);
     ui->SceneView->setScene(scene);
 
     realInterval = 1;
@@ -35,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     engine->setScene(scene);
     engine->setSettings(settings);
-    engine->importBodySystem("./Systems/system.txt");
+    engine->importBodySystem("./Systems/1.txt");
     //engine->addBody(0, 0, 0, 0, 100, "NONE");
     //engine->addBody(50, 0, 0, 1, 0, "NONE");
     //engine->exportBodySystem();
