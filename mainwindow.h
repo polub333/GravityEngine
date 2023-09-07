@@ -3,12 +3,15 @@
 
 #include <QMainWindow>
 #include <QTimer>
-#include <QLayout>
-#include <QPushButton>
-#include <QLabel>
-#include <QLineEdit>
+#include <QMouseEvent>
+#include "guiheaders.h"
 
 #include "engine.h"
+#include "createbodywindow.h"
+#include "editbodywindow.h"
+#include "settingswindow.h"
+#include "bodylistwindow.h"
+#include "statisticswindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,22 +25,37 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-  //  void start();
 private:
     Ui::MainWindow *ui;
     Engine* engine;
     QTimer* timer;
-    QWidget* settings;
+    Settings settings;
+    Body* selectedBody;
+
+    BodyWindow* createBodyWindow;
+    BodyWindow* editBodyWindow;
+    BodyListWindow* bodyListWindow;
+    SettingsWindow* settingsWindow;
+    StatisticsWindow* statisticsWindow;
     int counter;
 
-    qreal fps;
-    qreal boost;
     qreal realInterval;
 
-    void changeSettings(qreal, qreal, qreal);
+    bool active;
 
+    void showSelectedBodyInfo();
 private slots:
     void update();
-    void on_SettingButton_clicked();
+    void changeSettings(Settings);
+    void setSelectedBody(Body*);
+    void on_SettingsButton_clicked();
+    void on_NewBodyButton_clicked();
+    void on_StartPauseButton_clicked();
+    void on_BodyListButton_clicked();
+    void on_EditButton_clicked();
+    void on_ForceFieldButton_clicked();
+
+    void mouseMoveEvent(QMouseEvent*);
+    void on_StatisticsButton_clicked();
 };
 #endif // MAINWINDOW_H

@@ -2,7 +2,10 @@
 #define SCENE_H
 
 #include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 #include <QDebug>
+
+#include "directions.h"
 
 class Scene: public QGraphicsScene
 {
@@ -10,6 +13,21 @@ class Scene: public QGraphicsScene
 public:
     Scene();
     void drawSphere(qreal, qreal, qreal);
+    void drawSelected(qreal, qreal, qreal);
+
+    void drawArrow(qreal, qreal, direction);
+    void drawCrosshair(qreal, qreal);
+
+    void setSceneSize(qreal, qreal);
+private:
+    qreal width;
+    qreal height;
+private slots:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent*);
+    void mousePressEvent(QGraphicsSceneMouseEvent*);
+signals:
+    void changeCursorPosition(qreal, qreal);
+    void mousePressed(qreal, qreal);
 };
 
 #endif // SCENE_H

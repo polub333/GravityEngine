@@ -5,76 +5,51 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , engine(new Engine)
-    , settings(new QWidget)
+    , createBodyWindow(new CreateBodyWindow(engine))
+    , editBodyWindow(new EditBodyWindow)
+    , bodyListWindow(new BodyListWindow(engine))
+    , settingsWindow(new SettingsWindow)
+    , statisticsWindow(new StatisticsWindow)
 {
     ui->setupUi(this);
     Scene* scene = new Scene();
     ui->SceneView->setScene(scene);
-    realInterval = 0.01;
-    boost = 1;
-    fps = 100;
+
+    realInterval = 1;
+
+    ui->SceneView->setMouseTracking(true);
+
+
+    scene->setSceneSize(ui->SceneView->width(), ui->SceneView->height());
+
+    settings.setResolution(1000);
+    settings.setTimeBoost(1);
+    settings.setFps(100);
+
     engine->setScene(scene);
-    engine->setInter(realInterval * boost);
-    engine->addBody(0, 0, 0, 0, 100000);
-    engine->addBody(100, 0, 0, 15, 0);
+    engine->setSettings(settings);
+    engine->addBody(0, 0, 0, 0, 100, "NONE");
+    engine->addBody(50, 0, 0, 1, 0, "NONE");
+    /*
+
+    0 0 0 0 100000
+    50 0 0 45 0
+
+    */
+
     timer = new QTimer();
     counter = 0;
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    selectedBody = nullptr;
 
-    QHBoxLayout* rIL = new QHBoxLayout();
-    QLabel* rILb = new QLabel("Real Interval");
-    QLineEdit* rILE = new QLineEdit();
-    rILE->setText(QString::number(realInterval));
-    rIL->addWidget(rILb);
-    rIL->addWidget(rILE);
-
-    QHBoxLayout* bL = new QHBoxLayout();
-    QLabel* bLb = new QLabel("Time Boost");
-    QLineEdit* bLE = new QLineEdit();
-    bLE->setText(QString::number(boost));
-    bL->addWidget(bLb);
-    bL->addWidget(bLE);
-
-    QHBoxLayout* fL = new QHBoxLayout();
-    QLabel* fLb = new QLabel("FPS");
-    QLineEdit* fLE = new QLineEdit();
-    fLE->setText(QString::number(fps));
-    fL->addWidget(fLb);
-    fL->addWidget(fLE);
-
-    QHBoxLayout* btnL = new QHBoxLayout();
-    QPushButton* SubmitButton = new QPushButton();
-    QPushButton* CancelButton = new QPushButton();
-    SubmitButton->setText("Submit");
-    CancelButton->setText("Cancel");
-    btnL->addWidget(SubmitButton);
-    btnL->addWidget(CancelButton);
-
-    layout->addLayout(rIL);
-    layout->addLayout(bL);
-    layout->addLayout(fL);
-    layout->addLayout(btnL);
-    settings->setLayout(layout);
-
-    connect(SubmitButton, &QPushButton::clicked, this, [=](){
-        qreal rI = rILE->text().toDouble();
-        qreal b = bLE->text().toDouble();
-        qreal f = fLE->text().toDouble();
-        this->changeSettings(rI, b, f);
-    });
-    connect(CancelButton, &QPushButton::clicked, this, [=](){
-        rILE->setText(QString::number(realInterval));
-        bLE->setText(QString::number(boost));
-        fLE->setText(QString::number(fps));
-    });
-
-
-   // settings->setLayout(layout);
+    connect(settingsWindow, SIGNAL(sendSettings(Settings)), this, SLOT(changeSettings(Settings)));
+    connect(engine, SIGNAL(setSelectedBody(Body*)), this, SLOT(setSelectedBody(Body*)));
 
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->setInterval(realInterval);
     timer->start();
+    active = true;
+    ui->StartPauseButton->setText("Pause");
 
 }
 
@@ -84,27 +59,110 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::changeSettings(Settings _settings)
+{
+    settings = _settings;
+    engine->setSettings(_settings);
+}
+
 void MainWindow::update()
 {
     ++counter;
-    if(counter%(int((1000/realInterval)/fps)) == 0){
+    if(counter%(int((1000/realInterval)/settings.getFps())) == 0){
         engine->drawAllBodies();
+        showSelectedBodyInfo();
     }
     engine->changeAllBodies();
 }
 
-void MainWindow::on_SettingButton_clicked()
+void MainWindow::on_SettingsButton_clicked()
 {
-    settings->show();
+    settingsWindow->open(settings);
 }
 
-void MainWindow::changeSettings(qreal _realInterval, qreal _boost, qreal _fps)
+void MainWindow::on_NewBodyButton_clicked()
 {
-    realInterval = _realInterval;
-    boost = _boost;
-    fps = _fps;
-
-    engine->setInter(realInterval * boost);
-    timer->setInterval(realInterval);
-
+    createBodyWindow->setBody();
 }
+
+
+void MainWindow::on_StartPauseButton_clicked()
+{
+    engine->setForceField(false);
+    if(active){
+        timer->stop();
+        ui->StartPauseButton->setText("Start");
+        active = false;
+    }
+    else{
+        timer->start();
+        ui->StartPauseButton->setText("Pause");
+        active = true;
+    }
+}
+
+
+void MainWindow::on_BodyListButton_clicked()
+{
+    bodyListWindow->open();
+}
+
+void MainWindow::setSelectedBody(Body* _selectedBody)
+{
+    selectedBody = _selectedBody;
+}
+
+void MainWindow::showSelectedBodyInfo()
+{
+    QString xCoord, yCoord, xVel, yVel;
+    if(selectedBody == nullptr){
+        xCoord = "";
+        yCoord = "";
+        xVel = "";
+        yVel = "";
+    }
+    else{
+        xCoord = QString::number(selectedBody->getCoordinates().first);
+        yCoord = QString::number(selectedBody->getCoordinates().second);
+        xVel = QString::number(selectedBody->getVelocity().first);
+        yVel = QString::number(selectedBody->getVelocity().second);
+    }
+    ui->XCoordLabel->setText(xCoord);
+    ui->YCoordLabel->setText(yCoord);
+    ui->XVelLabel->setText(xVel);
+    ui->YVelLabel->setText(yVel);
+}
+
+void MainWindow::on_EditButton_clicked()
+{
+    if(selectedBody == nullptr){
+        return;
+    }
+    editBodyWindow->editBody(selectedBody);
+}
+
+
+void MainWindow::on_ForceFieldButton_clicked()
+{
+    if(engine->getForceField()){
+        engine->setForceField(false);
+        ui->ForceFieldButton->setText("Show Force Field");
+    }
+    else{
+        engine->setForceField(true);
+        ui->ForceFieldButton->setText("Hide Force Field");
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
+{
+    //qDebug()<<event->pos();
+}
+
+void MainWindow::on_StatisticsButton_clicked()
+{
+    if(selectedBody != nullptr){
+        statisticsWindow->open(selectedBody);
+    }
+}
+
