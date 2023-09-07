@@ -14,7 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     , importSystemWindow(new ImportSystemWindow)
 {
     ui->setupUi(this);
-    Scene* scene = new Scene();
+
+    //ui->SceneView->setViewportUpdateMode(QGraphicsView::LazyViewportUpdate);
+    ui->SceneView->setOptimizationFlag(QGraphicsView::DontSavePainterState, true);
+    ui->SceneView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+
+    scene = new Scene();
     ui->SceneView->setScene(scene);
 
     realInterval = 1;
@@ -25,12 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setSceneSize(ui->SceneView->width(), ui->SceneView->height());
 
     settings.setResolution(1000);
-    settings.setTimeBoost(1);
-    settings.setFps(100);
+    settings.setTimeBoost(30);
+    settings.setFps(10);
 
     engine->setScene(scene);
     engine->setSettings(settings);
-
     engine->importBodySystem("./Systems/system.txt");
     //engine->addBody(0, 0, 0, 0, 100, "NONE");
     //engine->addBody(50, 0, 0, 1, 0, "NONE");
@@ -70,6 +74,7 @@ MainWindow::~MainWindow()
     delete statisticsWindow;
     delete exportSystemWindow;
     delete importSystemWindow;
+
     delete ui;
 }
 

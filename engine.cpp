@@ -52,7 +52,8 @@ void Engine::drawAllBodies()
         //scene->drawCrosshair(cursorPosition.first, cursorPosition.second);
     }
     if(forceField){
-        drawForces();
+        //drawForces();
+        drawForceFields();
     }
     for(int i=0;i<bodies.size();++i){
         std::pair<qreal, qreal> coordinates = bodies[i]->getCoordinates();
@@ -222,13 +223,19 @@ void Engine::clearSystem()
 
 void Engine::drawForceFields()
 {
-    for(int x = -100; x<100;x += 20){
-        for(int y=-100; y < 100;y += 20){
+    int cellSize=40;
+    for(int x = -500; x<500;x += cellSize){
+        for(int y=-500; y < 500;y += cellSize){
             std::pair<qreal, qreal> force = computeForces(x, y);
-            qreal angle = force.second / force.second;
-            std::pair<qreal, qreal> point = std::make_pair<qreal, qreal>(x, y);
-            qreal length = 10;
-            scene->drawLine(point, length, angle);
+            //std::pair<qreal, qreal> point1 = std::make_pair<qreal, qreal>(x, y);
+            qreal length = std::sqrt(force.first*force.first + force.second*force.second);
+            qreal x1 = -1 * force.first / length * cellSize/2 + x;
+            qreal y1 = -1 * force.second / length * cellSize/2 + y;
+            qreal x2 = force.first / length * cellSize/2 + x;
+            qreal y2 = force.second / length * cellSize/2 + y;
+            //qDebug()<<x2<<" "<<y2;
+            //std::pair<qreal, qreal> point2 = std::make_pair<qreal, qreal>(x2, y2);
+            scene->drawLine(x1, y1, x2, y2);
         }
     }
 }

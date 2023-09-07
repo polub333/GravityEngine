@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsView>
 #include <QTimer>
 #include <QMouseEvent>
 #include "guiheaders.h"
@@ -33,6 +34,8 @@ private:
     QTimer* timer;
     Settings settings;
     Body* selectedBody;
+
+    Scene* scene;
 
     BodyWindow* createBodyWindow;
     BodyWindow* editBodyWindow;

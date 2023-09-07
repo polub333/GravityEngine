@@ -18,7 +18,7 @@ public:
 
     void drawArrow(qreal, qreal, direction);
     void drawCrosshair(qreal, qreal);
-    void drawLine(std::pair<qreal, qreal>, qreal, qreal);
+    void drawLine(qreal, qreal, qreal, qreal);
 
     void setSceneSize(qreal, qreal);
 private:
