@@ -60,6 +60,13 @@ void Engine::drawAllBodies()
     for(int i=0;i<bodies.size();++i){
         std::pair<qreal, qreal> coordinates = bodies[i]->getCoordinates();
         scene->drawSphere(coordinates.first, coordinates.second, 5);
+        auto pathway = bodies[i]->getPathway();
+        for(auto i : pathway){
+            std::pair<qreal, qreal> firstCoords = i->getFirstCoordinates();
+            std::pair<qreal, qreal> secondCoords = i->getSecondCoordinates();
+            scene->drawLine(firstCoords.first, firstCoords.second,
+                            secondCoords.first, secondCoords.second);
+        }
         if(bodies[i]->getSelected()){
             scene->drawSelected(coordinates.first, coordinates.second, 5);
             emit setSelectedBody(bodies[i]);
@@ -171,6 +178,10 @@ void Engine::importBodySystem(const QString path)
     clearSystem();
     std::fstream file(path.toStdString(), std::ios_base::in);
     qDebug()<<path;
+    if(file.fail()){
+        file.close();
+        return;
+    }
     char p[FILENAME_MAX];
     _getcwd(p, sizeof(p));
     p[sizeof(p)-1] = '\0';
@@ -225,9 +236,24 @@ void Engine::clearSystem()
 
 void Engine::drawForceFields()
 {
-    int cellSize=40;
-    for(int x = -500; x<500;x += cellSize){
-        for(int y=-500; y < 500;y += cellSize){
+    int cellSize=20;
+    qreal maxForce = -1, xx, yy;
+    for(int x = -400; x<400;x += 1){
+        for(int y=-400; y < 400;y += 1){
+            std::pair<qreal, qreal> force = computeForces(x, y);
+            qreal forceValue = sqrt(force.first*force.first + force.second*force.second);
+            if(forceValue > maxForce){
+                if(forceValue > 1) forceValue = 1;
+                maxForce = forceValue;
+                xx = x;
+                yy = y;
+            }
+        }
+    }
+    //qDebug()<<maxForce << xx << yy;
+    //maxForce /= 400;
+    for(int x = -400; x<400;x += cellSize){
+        for(int y=-400; y < 400;y += cellSize){
             std::pair<qreal, qreal> force = computeForces(x, y);
             //std::pair<qreal, qreal> point1 = std::make_pair<qreal, qreal>(x, y);
             qreal length = std::sqrt(force.first*force.first + force.second*force.second);
@@ -237,7 +263,10 @@ void Engine::drawForceFields()
             qreal y2 = force.second / length * cellSize/2 + y;
             //qDebug()<<x2<<" "<<y2;
             //std::pair<qreal, qreal> point2 = std::make_pair<qreal, qreal>(x2, y2);
-            scene->drawLine(x1, y1, x2, y2);
+            //if(force.first*force.first + force.second*force.second < 0.001){
+            //    continue;
+            //}
+            scene->drawForceLine(x1, y1, x2, y2, length/maxForce);
         }
     }
 }

@@ -5,6 +5,9 @@ Body::Body(int sx, int sy)
     sizeX = sx;
     sizeY = sy;
 
+    pathwayLength = 100;
+    pathwayPrecision = 10;
+
     isSelected = false;
     maxX = -1e9;
     minX = 1e9;
@@ -23,6 +26,7 @@ void Body::setCoordinates(const qreal _x, const qreal _y)
 {
     x = _x;
     y = _y;
+    addPathway(x, y, x, y);
 }
 
 void Body::setVelocity(const qreal _velX, const qreal _velY)
@@ -63,19 +67,36 @@ QString Body::getName() const
 
 void Body::changeCoordinatesDueVelocity(const qreal time)
 {
+    bool forcedPathwayUpdate = false;
     x += velX * time;
     if(x > sizeX){
+        forcedPathwayUpdate = true;
         x = x - 2 * sizeX;
     }
     else if(x < -1 * sizeX){
+        forcedPathwayUpdate = true;
         x = x + 2*sizeX;
     }
     y += velY * time;
     if(y > sizeY){
+        forcedPathwayUpdate = true;
         y = y - 2*sizeY;
     }
     else if(y < -1 * sizeY){
         y = y + 2*sizeY;
+        forcedPathwayUpdate = true;
+    }
+
+    std::pair<qreal, qreal> PreviousCoords = pathway.back()->getSecondCoordinates();
+    if(forcedPathwayUpdate){
+        addPathway(x, y, x, y);
+    }
+    else if((x - PreviousCoords.first)*(x - PreviousCoords.first) +
+       (y - PreviousCoords.second)*(y - PreviousCoords.second) > pathwayPrecision){
+        addPathway(PreviousCoords.first, PreviousCoords.second, x, y);
+    }
+    if(pathway.size() > pathwayLength){
+        deletePathway();
     }
 }
 
@@ -182,4 +203,20 @@ qreal Body::getMinVel() const
 qreal Body::getLifetime() const
 {
     return lifetime;
+}
+
+void Body::addPathway(qreal x1, qreal y1, qreal x2, qreal y2)
+{
+    Pathway* newPassway = new Pathway(x1, y1, x2, y2);
+    pathway.push_back(newPassway);
+}
+
+void Body::deletePathway()
+{
+    pathway.pop_front();
+}
+
+std::deque<Pathway*>& Body::getPathway()
+{
+    return pathway;
 }

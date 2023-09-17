@@ -4,7 +4,10 @@
 #include <QtGlobal>
 #include <QString>
 
-#include<utility>
+#include <deque>
+#include <utility>
+
+#include "pathway.h"
 
 class Body
 {
@@ -28,6 +31,8 @@ public:
 
     bool contains(const qreal, const qreal);
     void updateStatistics(qreal);
+
+    std::deque<Pathway*>& getPathway();
 
     qreal getMaxX() const;
     qreal getMinX() const;
@@ -63,6 +68,12 @@ private:
     qreal lifetime;
 
     bool isSelected;
+
+    std::deque<Pathway*> pathway;
+    int pathwayLength;
+    int pathwayPrecision;
+    void addPathway(qreal x1, qreal y1, qreal x2, qreal y2);
+    void deletePathway();
 };
 
 #endif // BODY_H

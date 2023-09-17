@@ -19,6 +19,7 @@ SOURCES += \
     importsystemwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    pathway.cpp \
     scene.cpp \
     settings.cpp \
     settingswindow.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     guiheaders.h \
     importsystemwindow.h \
     mainwindow.h \
+    pathway.h \
     scene.h \
     settings.h \
     settingswindow.h \

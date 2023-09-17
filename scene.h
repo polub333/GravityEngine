@@ -5,6 +5,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 #include <QPainter>
+#include <QGraphicsItem>
 
 #include "directions.h"
 
@@ -18,6 +19,7 @@ public:
 
     void drawArrow(qreal, qreal, direction);
     void drawCrosshair(qreal, qreal);
+    void drawForceLine(qreal, qreal, qreal, qreal, qreal);
     void drawLine(qreal, qreal, qreal, qreal);
 
     void setSceneSize(qreal, qreal);

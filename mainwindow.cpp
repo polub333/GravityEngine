@@ -32,12 +32,12 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setSceneSize(ui->SceneView->width(), ui->SceneView->height());
 
     settings.setResolution(1000);
-    settings.setTimeBoost(30);
+    settings.setTimeBoost(3);
     settings.setFps(10);
 
     engine->setScene(scene);
     engine->setSettings(settings);
-    engine->importBodySystem("./Systems/1.txt");
+    engine->importBodySystem("./Systems/2.txt");
     //engine->addBody(0, 0, 0, 0, 100, "NONE");
     //engine->addBody(50, 0, 0, 1, 0, "NONE");
     //engine->exportBodySystem();
