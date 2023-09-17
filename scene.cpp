@@ -143,7 +143,7 @@ void Scene::drawLine(qreal x1, qreal y1, qreal x2, qreal y2)
 void Scene::drawForceLine(qreal x1, qreal y1, qreal x2, qreal y2, qreal strength)
 {
     QPen pen;
-    if(strength < 0.0005){
+    /*if(strength < 0.0005){
         return;
     }
     if(strength < 0.004){
@@ -157,12 +157,27 @@ void Scene::drawForceLine(qreal x1, qreal y1, qreal x2, qreal y2, qreal strength
     }
     else{
         pen.setColor(Qt::red);
-    }
+    }*/
     //QFont font;
     //font.setPixelSize(5);
     //QGraphicsTextItem* text = new QGraphicsTextItem(QString::number(strength));
     //text->setFont(font);
     //text->setPos(x1, y1);
     //addItem(text);
+    if(strength == 1){
+        pen.setColor(Qt::cyan);
+    }
+    else if(strength == 2){
+        pen.setColor(Qt::blue);
+    }
+    else if(strength == 3){
+        pen.setColor(Qt::yellow);
+    }
+    else if(strength == 4){
+        pen.setColor(Qt::red);
+    }
+    else{
+        pen.setColor(Qt::magenta);
+    }
     addLine(x1, y1, x2, y2, pen);
 }

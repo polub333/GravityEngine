@@ -237,7 +237,8 @@ void Engine::clearSystem()
 void Engine::drawForceFields()
 {
     int cellSize=20;
-    qreal maxForce = -1, xx, yy;
+    qreal maxForce = -1;
+    std::vector<qreal> forceValues;
     for(int x = -400; x<400;x += 1){
         for(int y=-400; y < 400;y += 1){
             std::pair<qreal, qreal> force = computeForces(x, y);
@@ -245,28 +246,38 @@ void Engine::drawForceFields()
             if(forceValue > maxForce){
                 if(forceValue > 1) forceValue = 1;
                 maxForce = forceValue;
-                xx = x;
-                yy = y;
             }
+            forceValues.push_back(forceValue);
         }
     }
-    //qDebug()<<maxForce << xx << yy;
-    //maxForce /= 400;
+    std::sort(forceValues.begin(), forceValues.end());
     for(int x = -400; x<400;x += cellSize){
         for(int y=-400; y < 400;y += cellSize){
             std::pair<qreal, qreal> force = computeForces(x, y);
-            //std::pair<qreal, qreal> point1 = std::make_pair<qreal, qreal>(x, y);
             qreal length = std::sqrt(force.first*force.first + force.second*force.second);
             qreal x1 = -1 * force.first / length * cellSize/2 + x;
             qreal y1 = -1 * force.second / length * cellSize/2 + y;
             qreal x2 = force.first / length * cellSize/2 + x;
             qreal y2 = force.second / length * cellSize/2 + y;
-            //qDebug()<<x2<<" "<<y2;
-            //std::pair<qreal, qreal> point2 = std::make_pair<qreal, qreal>(x2, y2);
-            //if(force.first*force.first + force.second*force.second < 0.001){
-            //    continue;
-            //}
-            scene->drawForceLine(x1, y1, x2, y2, length/maxForce);
+            qreal strength;
+            int n = forceValues.size();
+            if(length < forceValues[2*n/3]){
+                if(length < forceValues[n/3]){
+                    strength = 1;
+                }
+                else{
+                    strength = 2;
+                }
+            }
+            else{
+                if(length < forceValues[7*n/8]){
+                    strength = 3;
+                }
+                else{
+                    strength = 4;
+                }
+            }
+            scene->drawForceLine(x1, y1, x2, y2, strength);
         }
     }
 }
