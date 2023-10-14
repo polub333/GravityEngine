@@ -7,6 +7,7 @@ Engine::Engine()
     forceField = false;
     sizeX = 400;
     sizeY = 400;
+    bodyRadius = 3;
 }
 
 void Engine::setScene(Scene* _scene)
@@ -54,9 +55,9 @@ void Engine::drawAllBodies()
         //scene->drawCrosshair(cursorPosition.first, cursorPosition.second);
     }
     if(forceField){
-        //drawForces();
         drawForceFields();
     }
+
     for(int i=0;i<bodies.size();++i){
         std::pair<qreal, qreal> coordinates = bodies[i]->getCoordinates();
         scene->drawSphere(coordinates.first, coordinates.second, 5);
@@ -74,24 +75,39 @@ void Engine::drawAllBodies()
     }
 }
 
-void Engine::changeAllBodies()
+void Engine::changeAllBodies(qreal inter)
 {
     qreal res = settings.getResolution();
-    qreal inter = settings.getTimeBoost() / 1000;
+    qreal interMod = settings.getTimeBoost() / 1000;
 
     for(int kol = 0; kol < res; ++kol){
         for(int i=0;i<bodies.size();++i){
-        std::pair<qreal, qreal> coord = bodies[i]->getCoordinates();
-        std::pair<qreal, qreal> force = computeForces(coord.first, coord.second);
-        bodies[i]->updateStatistics(inter / res);
+            std::pair<qreal, qreal> coord = bodies[i]->getCoordinates();
+            std::pair<qreal, qreal> force = computeForce(coord.first, coord.second);
+            bodies[i]->updateStatistics(inter * interMod / res);
 
-        bodies[i]->changeCoordinatesDueVelocity(inter / res);
-        bodies[i]->changeVelocityDueForce(force.first, force.second, inter / res);
-    }
+            bodies[i]->changeCoordinatesDueVelocity(inter * interMod / res);
+            bodies[i]->changeVelocityDueForce(force.first, force.second, inter * interMod / res);
+            int collidedBodyIndex = findCollidedBody(bodies[i]->getCoordinates());
+            if(collidedBodyIndex != bodies.size()){
+                std::vector<Body*>::iterator minIterator;
+                std::vector<Body*>::iterator maxIterator;
+                if(collidedBodyIndex < i){
+                     minIterator = bodies.begin() + collidedBodyIndex;
+                     maxIterator = bodies.begin() + i;
+                }
+                else{
+                    minIterator = bodies.begin() + i;
+                    maxIterator = bodies.begin() + collidedBodyIndex;
+                }
+                bodies.erase(minIterator);
+                bodies.erase(maxIterator - 1);
+            }
+        }
     }
 }
 
-std::pair<qreal, qreal> Engine::computeForces(qreal x, qreal y)
+std::pair<qreal, qreal> Engine::computeForce(qreal x, qreal y)
 {
     qreal xForce = 0, yForce = 0;
     for(int i=0;i<bodies.size();++i){
@@ -111,12 +127,13 @@ std::pair<qreal, qreal> Engine::computeForces(qreal x, qreal y)
     }
     return std::pair<qreal, qreal>(xForce, yForce);
 }
+/*
 
 void Engine::drawForces()
 {
     for(int x=-190;x<190;x+=20){
         for(int y=-190;y<190;y+=20){
-            std::pair<qreal, qreal> force = computeForces(x, y);
+            std::pair<qreal, qreal> force = computeForce(x, y);
             qreal tg = force.second / force.first;
             if(tg > -sqrt(3)/3 && tg < sqrt(3)/3){
                 if(force.first >= 0){
@@ -153,6 +170,7 @@ void Engine::drawForces()
         }
     }
 }
+*/
 
 void Engine::changeCursorPosition(qreal x, qreal y)
 {
@@ -237,11 +255,12 @@ void Engine::clearSystem()
 void Engine::drawForceFields()
 {
     int cellSize=20;
+
     qreal maxForce = -1;
     std::vector<qreal> forceValues;
     for(int x = -400; x<400;x += 1){
         for(int y=-400; y < 400;y += 1){
-            std::pair<qreal, qreal> force = computeForces(x, y);
+            std::pair<qreal, qreal> force = computeForce(x, y);
             qreal forceValue = sqrt(force.first*force.first + force.second*force.second);
             if(forceValue > maxForce){
                 if(forceValue > 1) forceValue = 1;
@@ -251,9 +270,10 @@ void Engine::drawForceFields()
         }
     }
     std::sort(forceValues.begin(), forceValues.end());
+
     for(int x = -400; x<400;x += cellSize){
         for(int y=-400; y < 400;y += cellSize){
-            std::pair<qreal, qreal> force = computeForces(x, y);
+            std::pair<qreal, qreal> force = computeForce(x, y);
             qreal length = std::sqrt(force.first*force.first + force.second*force.second);
             qreal x1 = -1 * force.first / length * cellSize/2 + x;
             qreal y1 = -1 * force.second / length * cellSize/2 + y;
@@ -261,6 +281,7 @@ void Engine::drawForceFields()
             qreal y2 = force.second / length * cellSize/2 + y;
             qreal strength;
             int n = forceValues.size();
+
             if(length < forceValues[2*n/3]){
                 if(length < forceValues[n/3]){
                     strength = 1;
@@ -280,4 +301,20 @@ void Engine::drawForceFields()
             scene->drawForceLine(x1, y1, x2, y2, strength);
         }
     }
+}
+
+int Engine::findCollidedBody(std::pair<qreal, qreal> coords)
+{
+   for(int i = 0; i < bodies.size(); ++i){
+       if(bodies[i]->getCoordinates() == coords){
+           continue;
+       }
+       std::pair<qreal, qreal> coords2 = bodies[i]->getCoordinates();
+       qreal distance = std::sqrt((coords.first - coords2.first) * (coords.first - coords2.first) +
+                                  (coords.second - coords2.second) * (coords.second - coords2.second));
+       if(distance < bodyRadius){
+           return i;
+       }
+   }
+   return bodies.size();
 }

@@ -63,7 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start();
     active = true;
     ui->StartPauseButton->setText("Pause");
-
 }
 
 MainWindow::~MainWindow()
@@ -88,12 +87,13 @@ void MainWindow::changeSettings(Settings _settings)
 
 void MainWindow::update()
 {
-    ++counter;
+
+    counter+=1;
     if(counter%(int((1000/realInterval)/settings.getFps())) == 0){
         engine->drawAllBodies();
         showSelectedBodyInfo();
     }
-    engine->changeAllBodies();
+    engine->changeAllBodies(realInterval);
 }
 
 void MainWindow::on_SettingsButton_clicked()

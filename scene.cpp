@@ -164,6 +164,7 @@ void Scene::drawForceLine(qreal x1, qreal y1, qreal x2, qreal y2, qreal strength
     //text->setFont(font);
     //text->setPos(x1, y1);
     //addItem(text);
+    /*
     if(strength == 1){
         pen.setColor(Qt::cyan);
     }
@@ -179,5 +180,13 @@ void Scene::drawForceLine(qreal x1, qreal y1, qreal x2, qreal y2, qreal strength
     else{
         pen.setColor(Qt::magenta);
     }
-    addLine(x1, y1, x2, y2, pen);
+    */
+    pen.setColor(Qt::blue);
+
+    qreal centerX = (x1 + x2) / 2;
+    qreal centerY = (y1 + y2) / 2;
+
+    qreal mod = (strength)/5;
+    addLine(centerX + (x1-centerX)*mod, centerY + (y1-centerY)*mod,
+            centerX + (x2-centerX)*mod, centerY + (y2-centerY)*mod, pen);
 }

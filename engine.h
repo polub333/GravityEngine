@@ -19,9 +19,9 @@ public:
     void setScene(Scene*);
     void addBody(qreal, qreal, qreal, qreal, qreal, QString);
     void drawAllBodies();
-    void changeAllBodies();
+    void changeAllBodies(qreal inter);
     void setSettings(Settings);
-    std::pair<qreal, qreal> computeForces(qreal, qreal);
+    std::pair<qreal, qreal> computeForce(qreal, qreal);
     std::vector<Body*> bodies;
 
     void setForceField(const bool);
@@ -40,9 +40,14 @@ private:
     qreal maxVel;
     qreal maxX;
     std::pair<qreal, qreal> cursorPosition;
+    qreal bodyRadius;
+
+    std::vector<qreal> forceValues;
+
+    int findCollidedBody(std::pair<qreal, qreal> coords);
 
     bool forceField;
-    void drawForces();
+    //void drawForces();
     void drawForceFields();
     void clearSystem();
 private slots:
