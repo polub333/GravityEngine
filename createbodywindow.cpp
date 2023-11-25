@@ -25,6 +25,7 @@ void CreateBodyWindow::on_SubmitButton_clicked()
     if(name == ""){
         name = "NONE";
     }
+//    std::all_of()
     if(ok1 && ok2 && ok3 && ok4 && ok5 && ok6){
         qreal mass = massNum * pow(10, massExp);
         engine->addBody(xCoord, yCoord, xVel, yVel, mass, name);

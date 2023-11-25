@@ -109,7 +109,7 @@ void MainWindow::on_NewBodyButton_clicked()
 
 void MainWindow::on_StartPauseButton_clicked()
 {
-    engine->setForceField(false);
+    //engine->setForceField(false);
     if(active){
         timer->stop();
         ui->StartPauseButton->setText("Start");

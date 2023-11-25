@@ -25,6 +25,7 @@ void Engine::setSettings(Settings _settings)
 void Engine::setForceField(const bool _forceField)
 {
     forceField = _forceField;
+    drawAllBodies();
 }
 
 bool Engine::getForceField() const
@@ -203,11 +204,8 @@ void Engine::importBodySystem(const QString path)
     char p[FILENAME_MAX];
     _getcwd(p, sizeof(p));
     p[sizeof(p)-1] = '\0';
-    //printf("%s", p);
-    qDebug()<<p;
     int planetNum;
     file >> planetNum;
-    qDebug()<<planetNum;
     for(int i=0;i<planetNum;++i){
         qreal xCoord, yCoord, xVelocity, yVelocity, mass;
         std::string name;
@@ -215,15 +213,9 @@ void Engine::importBodySystem(const QString path)
         std::getline(file, name);
         file>>xCoord>>yCoord>>xVelocity>>yVelocity>>mass;
         addBody(xCoord, yCoord, xVelocity, yVelocity, mass, QString::fromStdString(name));
-        qDebug()<<QString::fromStdString(name)<<xCoord<<yCoord<<xVelocity<<yVelocity<<mass;
-        /*
-        bodies[i]->setName(QString::fromStdString(name));
-        bodies[i]->setCoordinates(xCoord, yCoord);
-        bodies[i]->setVelocity(xVelocity, yVelocity);
-        bodies[i]->setMass(mass);
-        */
     }
     file.close();
+    drawAllBodies();
 }
 
 void Engine::exportBodySystem()

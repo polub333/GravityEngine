@@ -6,7 +6,7 @@ BodyListWindow::BodyListWindow(QWidget *parent) :
     ui(new Ui::BodyListWindow)
 {
     ui->setupUi(this);
-    connect(ui->CloseButton, SIGNAL(clicked()), this, SLOT(hide()));
+    connect(ui->CloseButton,  &QPushButton::clicked, this, &BodyListWindow::hide);
 }
 
 BodyListWindow::BodyListWindow(Engine* _engine, QWidget *parent) :

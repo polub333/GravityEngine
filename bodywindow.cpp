@@ -25,9 +25,9 @@ void BodyWindow::setBody()
 
 }
 
-void BodyWindow::editBody(Body* body)
+void BodyWindow::editBody(Body*)
 {
-
+//std::ignore = ;
 }
 
 void BodyWindow::on_SubmitButton_clicked()

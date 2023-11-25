@@ -36,6 +36,7 @@ void SettingsWindow::on_SubmitButton_clicked()
         settings.setTimeBoost(timeBoost);
         settings.setFps(fps);
         emit sendSettings(settings);
+        hide();
     }
     else{
         QMessageBox msg(QMessageBox::Icon::Critical, "Invalid Parametrs",
